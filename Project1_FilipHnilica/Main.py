@@ -91,7 +91,7 @@ def print_word_length_table(word_lengths):
     
     # Vypíše tabulku s počtem výskytů jednotlivých délek slov
     # Výsledky jsou odsazeny do sloupců
-    print("\nWord Length Table:\n")
+    print("Word Length Table:")
     print("-" * 40)
     print(f"{'Len':<4} {'Occurences':<20} {'Nr.':<10}")
     print("-" * 40)
