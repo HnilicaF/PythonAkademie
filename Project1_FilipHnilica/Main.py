@@ -40,6 +40,7 @@ passwords = {
     'liz': 'pass123',
 }
 
+# Analyzuje text a ukládá výsledky do slovníku "results"
 def analyze_text(text):
     results = {
         'words': 0,
@@ -54,7 +55,9 @@ def analyze_text(text):
    
     for word in words:
 
+        # do "world_length" uloží delku slova bez interpunkce, mezery nepočítá jako slova
         word_length = len(word.strip('.,;:!?()[]{}"\'-'))
+        # přidá výsledek do slovníku "words_lengths" a zvýší se počet výskytů o 1
         results['words_lengths'][word_length] = results['words_lengths'].get(word_length, 0) + 1
         if word.isdigit():
             results['numeric_strings'] += 1
@@ -65,66 +68,85 @@ def analyze_text(text):
             results['lower_case'] += 1
         elif word.istitle():
             results['title_case'] += 1
-        
+        # přičte počet slov
         results['words'] += 1
     
     
     return results
 
+# Kontroluje uživatelské jméno a heslo
+# Pokud je uživatelské jméno a heslo správné, vrátí True, jinak False
 def check_password(username, password):
     if username in passwords and passwords[username] == password:
         return True
     return False
 
+# Vypíše tabulku s počtem výskytů jednotlivých délek slov
 def print_word_length_table(word_lengths):
 
+    # Vrací nic pokud je "word_lengths" prázdný
     if not word_lengths:
-        print("No words to display in table.")
+        print("No words to display in table.") 
         return
     
-    # Print table header
-    print("\nWord Length Table:")
+    # Vypíše tabulku s počtem výskytů jednotlivých délek slov
+    # Výsledky jsou odsazeny do sloupců
+    print("\nWord Length Table:\n")
+    print("-" * 40)
     print(f"{'Len':<4} {'Occurences':<20} {'Nr.':<10}")
     print("-" * 40)
     
-    #print each word length and its count
+    # Pro každou délku slova v "word_lengths" se vypíše délka slova, počet výskytů a hvězdičky
+    # Výsledky jsou odsazeny do sloupců
     for length, count in sorted(word_lengths.items()):
         asterisks = "*" * count
         print(f"{length:<2} | {asterisks:<20} | {count:<10}")
 
     print("-" * 40)
-    print("Word length Table:")
 
+# Vypíše výsledky analýzy textu
+def print_results(results):
+    print(f"There are {results['words']} words in the selected text.")
+    print(f"There are {results['title_case']} titlecase words.")
+    print(f"There are {results['upper_case']} uppercase words.")
+    print(f"There are {results['lower_case']} lowercase words.")
+    print(f"There are {results['numeric_strings']} numeric strings.")
+    print(f"The sum of all the numbers is: {results['sum_of_numbers']}.")
+    print("-" * 40)
+
+# Počátek programu který se ptá uživatele na uživatelské jméno a heslo
+print("Welcome to the text analyzer app!")
+print("Please enter your username and password to continue.")
 input_username = str(input("Enter your username: "))
 input_password = str(input("Enter your password: "))
 
 print("-" * 40)
 
+# Volá funkci check_password a kontroluje, zda je uživatelské jméno a heslo správné
 if check_password(input_username, input_password):
 
+    # Přivítá uživatele a vypíše počet textů k analýze
     print("Welcome to the app, " + input_username + "!")
     print("We have " + str(len(texts)) + " texts to be analyzed.")
     print("-" * 40)
 
-    text_number = int(input("Enter a number between 1 and " + str(len(texts)) + ": "))
+    # Ptá se uživatele, který text chce analyzovat, a kontroluje, zda je input integer
+    text_number = input("Enter a number between 1 and " + str(len(texts)) + ": ")
+    if not text_number.isdigit():
+        print("Invalid input. Please enter a number.")
+        exit()
+    
     print("-" * 40)
 
-    if 1 <= text_number <= len(texts):
-        selected_text = texts[text_number - 1]
+    # Kontroluje, zda je číslo v rozsahu 1 a počtu textů, pokud ano, analyzuje text a vypíše výsledky
+    # Pokud ne, vypíše chybovou hlášku a ukončí program
+    if 1 <= int(text_number) <= len(texts):
+        selected_text = texts[int(text_number) - 1]
         print("Analyzing text number " + str(text_number) + "...")
         analysis_results = analyze_text(selected_text)
-
-        print("-" * 40)
-        print(f"There are {analysis_results['words']} words in the selected text.")
-        print(f"There are {analysis_results['title_case']} titlecase words.")
-        print(f"There are {analysis_results['upper_case']} uppercase words.")
-        print(f"There are {analysis_results['lower_case']} lowercase words.")
-        print(f"There are {analysis_results['numeric_strings']} numeric strings.")
-        print(f"The sum of all the numbers is: {analysis_results['sum_of_numbers']}.")
-        print("-" * 40)
-        print("Word length Table:")
+        print_results(analysis_results)
         print_word_length_table(analysis_results['words_lengths'])
-        print("-" * 40)
+        
     else:
         print("Invalid number. Please enter a number between 1 and " + str(len(texts)) + ".")
         exit()
